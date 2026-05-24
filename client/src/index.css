@@ -1,0 +1,165 @@
+﻿@import "tailwindcss";
+
+/* ==================== CUSTOM THEME ==================== */
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --color-primary: #0f0f10;
+  --color-secondary: #1f1f22;
+  --color-accent: #111111;
+  --color-accent-light: #2f2f35;
+  --color-gold: #525252;
+  --color-surface: #f6f6f7;
+  --color-surface-light: #ffffff;
+}
+
+/* ==================== BASE STYLES ==================== */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #111111;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.16);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.28);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-slide-in-from-right {
+  animation: slideInFromRight 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-slide-in-from-left {
+  animation: slideInFromLeft 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ==================== SKELETON LOADING ==================== */
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ==================== GLASS MORPHISM ==================== */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ==================== GRADIENT TEXT ==================== */
+.gradient-text {
+  background: linear-gradient(135deg, #111111, #5a5a5a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ==================== SWIPER OVERRIDES ==================== */
+.thumbs-swiper .swiper-slide-thumb-active > div {
+  border-color: #000 !important;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.swiper-pagination-bullet {
+  background: #9ca3af !important;
+  opacity: 0.5;
+}
+.swiper-pagination-bullet-active {
+  background: #000 !important;
+  opacity: 1;
+}
+
+/* Ẩn scrollbar nhưng vẫn cho phép cuộn */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
