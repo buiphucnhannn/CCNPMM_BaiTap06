@@ -44,8 +44,8 @@ const Header = () => {
       <div className="w-full px-4 sm:px-8">
         <div className="relative h-[74px] flex items-center gap-4">
           <Link to="/" className="shrink-0 flex items-center gap-2.5 group">
-            <FiShoppingBag className="text-2xl text-black" />
-            <span className="text-[30px] font-bold tracking-tight leading-none">
+            <FiShoppingBag className="text-lg text-black" />
+            <span className="text-[22px] md:text-[24px] font-bold tracking-tight leading-none">
               <span className="text-black">SNEAKER</span>
               <span className="text-gray-700"> STORE</span>
             </span>
@@ -86,6 +86,13 @@ const Header = () => {
                       <p className="text-sm font-semibold text-gray-800">{user?.fullName}</p>
                       <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
+                    <Link
+                      to="/my-orders"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      <FiShoppingBag className="text-gray-400" /> Đơn hàng của tôi
+                    </Link>
                     <Link
                       to="/profile"
                       onClick={() => setUserMenuOpen(false)}
@@ -129,6 +136,9 @@ const Header = () => {
                   <Link to="/cart" onClick={() => setMenuOpen(false)} className="py-2.5 px-3 rounded-lg hover:bg-gray-100 transition-colors">
                     <FiShoppingCart className="inline mr-2" /> Giỏ hàng
                     {totalItems > 0 && <span className="ml-2 text-xs text-gray-500">({totalItems})</span>}
+                  </Link>
+                  <Link to="/my-orders" onClick={() => setMenuOpen(false)} className="py-2.5 px-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    <FiShoppingBag className="inline mr-2" /> Đơn hàng của tôi
                   </Link>
                   <Link to="/profile" onClick={() => setMenuOpen(false)} className="py-2.5 px-3 rounded-lg hover:bg-gray-100 transition-colors">
                     <FiUser className="inline mr-2" /> {user?.fullName}

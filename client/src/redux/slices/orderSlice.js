@@ -19,11 +19,43 @@ export const createOrder = createAsyncThunk('order/create', async (data, { rejec
   }
 })
 
+export const fetchMyOrders = createAsyncThunk('order/fetchMyOrders', async (_, { rejectWithValue }) => {
+  try {
+    const response = await orderApi.getMyOrders()
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response?.data || { message: 'Lỗi kết nối server' })
+  }
+})
+
+export const fetchOrderById = createAsyncThunk('order/fetchById', async (orderId, { rejectWithValue }) => {
+  try {
+    const response = await orderApi.getOrderById(orderId)
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response?.data || { message: 'Lỗi kết nối server' })
+  }
+})
+
+export const cancelOrder = createAsyncThunk('order/cancel', async (orderId, { rejectWithValue }) => {
+  try {
+    const response = await orderApi.cancelOrder(orderId)
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response?.data || { message: 'Lỗi kết nối server' })
+  }
+})
+
 const orderSlice = createSlice({
   name: 'order',
   initialState: {
     creating: false,
+    loadingOrders: false,
+    loadingCurrentOrder: false,
+    cancellingOrderId: null,
     lastOrder: null,
+    myOrders: [],
+    currentOrder: null,
     error: null,
   },
   reducers: {
@@ -32,6 +64,9 @@ const orderSlice = createSlice({
     },
     clearLastOrder: (state) => {
       state.lastOrder = null
+    },
+    clearCurrentOrder: (state) => {
+      state.currentOrder = null
     },
   },
   extraReducers: (builder) => {
@@ -48,8 +83,48 @@ const orderSlice = createSlice({
         state.creating = false
         state.error = getErrorMessage(action.payload, 'Đặt hàng thất bại')
       })
+      .addCase(fetchMyOrders.pending, (state) => {
+        state.loadingOrders = true
+        state.error = null
+      })
+      .addCase(fetchMyOrders.fulfilled, (state, action) => {
+        state.loadingOrders = false
+        state.myOrders = action.payload.orders || []
+      })
+      .addCase(fetchMyOrders.rejected, (state, action) => {
+        state.loadingOrders = false
+        state.error = getErrorMessage(action.payload, 'Không thể tải danh sách đơn hàng')
+      })
+      .addCase(fetchOrderById.pending, (state) => {
+        state.loadingCurrentOrder = true
+        state.error = null
+      })
+      .addCase(fetchOrderById.fulfilled, (state, action) => {
+        state.loadingCurrentOrder = false
+        state.currentOrder = action.payload.order || null
+      })
+      .addCase(fetchOrderById.rejected, (state, action) => {
+        state.loadingCurrentOrder = false
+        state.error = getErrorMessage(action.payload, 'Không thể tải chi tiết đơn hàng')
+      })
+      .addCase(cancelOrder.pending, (state, action) => {
+        state.cancellingOrderId = action.meta.arg
+        state.error = null
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.cancellingOrderId = null
+        const updatedOrder = action.payload.order
+        state.myOrders = state.myOrders.map((order) => (order._id === updatedOrder._id ? updatedOrder : order))
+        if (state.currentOrder?._id === updatedOrder._id) {
+          state.currentOrder = updatedOrder
+        }
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.cancellingOrderId = null
+        state.error = getErrorMessage(action.payload, 'Không thể hủy đơn hàng')
+      })
   },
 })
 
-export const { clearOrderError, clearLastOrder } = orderSlice.actions
+export const { clearOrderError, clearLastOrder, clearCurrentOrder } = orderSlice.actions
 export default orderSlice.reducer

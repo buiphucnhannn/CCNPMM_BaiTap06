@@ -32,7 +32,17 @@ const orderSchema = new mongoose.Schema(
         shippingFee: { type: Number, default: 0 },
         total: { type: Number, required: true },
         paymentMethod: { type: String, enum: ['COD'], default: 'COD' },
-        status: { type: String, enum: ['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'], default: 'pending' },
+        status: {
+            type: String,
+            enum: ['pending', 'confirmed', 'preparing', 'shipping', 'delivered', 'cancelled', 'cancel_requested'],
+            default: 'pending'
+        },
+        confirmedAt: { type: Date, default: null },
+        preparingAt: { type: Date, default: null },
+        shippingAt: { type: Date, default: null },
+        deliveredAt: { type: Date, default: null },
+        cancelledAt: { type: Date, default: null },
+        cancelRequestedAt: { type: Date, default: null },
         shippingAddress: shippingSchema,
         note: { type: String, default: '' }
     },

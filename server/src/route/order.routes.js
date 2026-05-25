@@ -25,4 +25,10 @@ router.get('/:id',
     orderController.getOrderById.bind(orderController)
 );
 
+router.patch('/:id/cancel',
+    authenticateToken,
+    apiLimiter,
+    orderController.cancelOrder.bind(orderController)
+);
+
 export default router;

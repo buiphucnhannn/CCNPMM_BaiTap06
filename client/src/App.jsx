@@ -12,6 +12,8 @@ import ProductsPage from './pages/ProductsPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
+import MyOrdersPage from './pages/MyOrdersPage'
+import MyOrderDetailPage from './pages/MyOrderDetailPage'
 
 function App() {
   return (
@@ -44,6 +46,16 @@ function App() {
                 <Route path="/order-success" element={
                   <ProtectedRoute>
                     <OrderSuccessPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/my-orders" element={
+                  <ProtectedRoute>
+                    <MyOrdersPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/my-orders/:id" element={
+                  <ProtectedRoute>
+                    <MyOrderDetailPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/profile" element={

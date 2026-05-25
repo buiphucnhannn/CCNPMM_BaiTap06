@@ -3,6 +3,15 @@ import orderRepository from '../repository/order.repository.js';
 import Product from '../model/product.model.js';
 
 class OrderService {
+    getMinutesSince(date) {
+        if (!date) return 0;
+        return (Date.now() - new Date(date).getTime()) / (60 * 1000);
+    }
+
+    async autoConfirmOrders(userId) {
+        const cutoffDate = new Date(Date.now() - 30 * 60 * 1000);
+        await orderRepository.autoConfirmByUser(userId, cutoffDate);
+    }
     getEffectivePrice(product) {
         if (!product) return 0;
         const salePrice = product.salePrice;
@@ -92,6 +101,7 @@ class OrderService {
             total,
             paymentMethod: 'COD',
             status: 'pending',
+            confirmedAt: null,
             shippingAddress,
             note
         };
@@ -105,13 +115,45 @@ class OrderService {
     }
 
     async getOrdersByUser(userId) {
+        await this.autoConfirmOrders(userId);
         return await orderRepository.findByUserId(userId);
     }
 
     async getOrderById(userId, orderId) {
+        await this.autoConfirmOrders(userId);
         const order = await orderRepository.findByIdForUser(orderId, userId);
         if (!order) throw new Error('Đơn hàng không tồn tại');
         return order;
+    }
+
+    async cancelOrder(userId, orderId) {
+        const order = await orderRepository.findByIdForUser(orderId, userId);
+        if (!order) throw new Error('Đơn hàng không tồn tại');
+
+        const minutesSinceCreated = this.getMinutesSince(order.createdAt);
+        if (minutesSinceCreated > 30) {
+            throw new Error('Đơn hàng đã quá 30 phút, không thể hủy');
+        }
+
+        if (order.status === 'pending' || order.status === 'confirmed') {
+            return await orderRepository.updateForUser(orderId, userId, {
+                status: 'cancelled',
+                cancelledAt: new Date(),
+            });
+        }
+
+        if (order.status === 'preparing') {
+            return await orderRepository.updateForUser(orderId, userId, {
+                status: 'cancel_requested',
+                cancelRequestedAt: new Date(),
+            });
+        }
+
+        if (order.status === 'cancelled' || order.status === 'cancel_requested') {
+            throw new Error('Đơn hàng đã được hủy hoặc đang chờ hủy');
+        }
+
+        throw new Error('Đơn hàng đang ở trạng thái không thể hủy');
     }
 }
 

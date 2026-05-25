@@ -40,6 +40,15 @@ class OrderController {
             res.status(404).json({ success: false, message: error.message });
         }
     }
+
+    async cancelOrder(req, res) {
+        try {
+            const order = await orderService.cancelOrder(req.user.userId, req.params.id);
+            res.status(200).json({ success: true, message: 'Cập nhật trạng thái hủy đơn thành công', order });
+        } catch (error) {
+            res.status(400).json({ success: false, message: error.message });
+        }
+    }
 }
 
 export default new OrderController();

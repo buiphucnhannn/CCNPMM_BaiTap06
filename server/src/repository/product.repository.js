@@ -69,12 +69,34 @@ class ProductRepository {
 
     // On-sale products (salePrice exists)
     async findOnSale(limit = 8) {
-        return await Product.find({
-            isActive: true,
-            salePrice: { $ne: null, $gt: 0 }
-        })
-            .sort({ createdAt: -1 })
-            .limit(limit);
+        const safeLimit = Math.max(parseInt(limit) || 8, 1);
+        return await Product.aggregate([
+            {
+                $match: {
+                    isActive: true,
+                    salePrice: { $ne: null, $gt: 0 }
+                }
+            },
+            {
+                $addFields: {
+                    discountValue: { $subtract: ['$price', '$salePrice'] },
+                    discountPercent: {
+                        $cond: [
+                            { $gt: ['$price', 0] },
+                            {
+                                $multiply: [
+                                    { $divide: [{ $subtract: ['$price', '$salePrice'] }, '$price'] },
+                                    100
+                                ]
+                            },
+                            0
+                        ]
+                    }
+                }
+            },
+            { $sort: { discountPercent: -1, discountValue: -1, soldCount: -1, createdAt: -1 } },
+            { $limit: safeLimit }
+        ]);
     }
 
     async findTopRanked(type = 'best_seller', page = 1, limit = 5, maxItems = 10) {
